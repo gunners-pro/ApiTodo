@@ -1,4 +1,5 @@
 using ApiTodo.App.Context;
+using ApiTodo.App.DTOs.Todo;
 using ApiTodo.App.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,5 +14,17 @@ public class TodoRepository(AppDbContext context) : ITodoRepository
         var todos = await _context.Todos.ToListAsync();
 
         return todos;
+    }
+
+    public async Task<Todo> Create(RequestCreateTodoDTO request)
+    {
+        var todo = await _context.Todos.AddAsync(new Todo
+        {
+            Id = Guid.NewGuid(),
+            Title = request.Title
+        });
+        await _context.SaveChangesAsync();
+
+        return todo.Entity;
     }
 }

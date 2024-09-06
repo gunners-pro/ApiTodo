@@ -1,3 +1,4 @@
+using ApiTodo.App.DTOs.Todo;
 using ApiTodo.App.Repositories.Todos;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,5 +14,13 @@ public class TodoController(ITodoRepository todoRepository) : ControllerBase
         var todos = await todoRepository.Get();
 
         return Ok(todos);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create(RequestCreateTodoDTO request)
+    {
+        var todo = await todoRepository.Create(request);
+
+        return Ok(todo);
     }
 }
