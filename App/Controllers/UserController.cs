@@ -27,4 +27,23 @@ public class UserController(IUserRepository userRepository) : ControllerBase
             return NotFound(result);
         }
     }
+
+    [HttpPost]
+    public async Task<IActionResult> Create(RequestCreateUserDTO request)
+    {
+        try
+        {
+            var userCreate = await userRepository.Create(request);
+            return Ok(userCreate);
+        }
+        catch (Exception e)
+        {
+            var result = new
+            {
+                statusCode = HttpStatusCode.Conflict,
+                message = e.Message
+            };
+            return Conflict(result);
+        }
+    }
 }
