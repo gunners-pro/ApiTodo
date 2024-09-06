@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
+using ApiTodo.App.Repositories.Todos;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +34,7 @@ var secretKey = builder.Configuration["JWT:SecretKey"]
     builder.Services.AddControllers();
     builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlServer(connectionString));
     builder.Services.AddScoped<IUserRepository, UserRepository>();
+    builder.Services.AddScoped<ITodoRepository, TodoRepository>();
 }
 
 var app = builder.Build();
