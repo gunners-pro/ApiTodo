@@ -1,11 +1,14 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 using ApiTodo.App.Context;
 using ApiTodo.App.DTOs.User;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using BC = BCrypt.Net.BCrypt;
 
 namespace ApiTodo.App.Repositories.User;
 
-public class UserRepository(AppDbContext context) : IUserRepository
+public class UserRepository(AppDbContext context, IConfiguration configuration) : IUserRepository
 {
     private readonly AppDbContext _context = context;
 
@@ -22,7 +25,7 @@ public class UserRepository(AppDbContext context) : IUserRepository
         {
             Id = userLoginResult.Id,
             Email = userLoginResult.Email,
-            Token = "12345678"
+            Token = GenerateJWTToken()
         };
 
         return user;
@@ -46,7 +49,7 @@ public class UserRepository(AppDbContext context) : IUserRepository
             {
                 Id = newUser.Id,
                 Email = newUser.Email,
-                Token = "12345678"
+                Token = GenerateJWTToken()
             };
 
             return userResponse;
@@ -55,5 +58,20 @@ public class UserRepository(AppDbContext context) : IUserRepository
         {
             throw new Exception("Email already exists.");
         }
+    }
+
+    private string GenerateJWTToken()
+    {
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:SecretKey"]!));
+        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+        var token = new JwtSecurityToken(
+            issuer: configuration["Jwt:Issuer"],
+            audience: configuration["Jwt:Audience"],
+            expires: DateTime.Now.AddMinutes(double.Parse(configuration["Jwt:TokenValidityInMinutes"]!)),
+            signingCredentials: credentials
+            );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }
