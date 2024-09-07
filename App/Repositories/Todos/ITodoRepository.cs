@@ -5,7 +5,7 @@ namespace ApiTodo.App.Repositories.Todos;
 
 public interface ITodoRepository
 {
-    Task<List<Todo>> Get();
+    Task<List<ResponseGetAllTodoDTO>> GetAllAsync(Guid userId);
 
     Task<Todo> Create(RequestCreateTodoDTO request);
 }

@@ -9,9 +9,20 @@ public class TodoRepository(AppDbContext context) : ITodoRepository
 {
     private readonly AppDbContext _context = context;
 
-    public async Task<List<Todo>> Get()
+    public async Task<List<ResponseGetAllTodoDTO>> GetAllAsync(Guid userId)
     {
-        var todos = await _context.Todos.ToListAsync();
+        var getTodos = await _context.Todos.Where(u => u.UserId.Equals(userId)).ToListAsync();
+        var todos = new List<ResponseGetAllTodoDTO>();
+        foreach (var todo in getTodos)
+        {
+            todos.Add(new ResponseGetAllTodoDTO
+            {
+                Id = todo.Id,
+                Title = todo.Title,
+                IsCompleted = todo.IsCompleted,
+                CreatedOn = todo.CreatedOn
+            });
+        }
 
         return todos;
     }
