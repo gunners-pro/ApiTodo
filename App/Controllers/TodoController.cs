@@ -1,3 +1,4 @@
+using System.Net;
 using ApiTodo.App.Attributes;
 using ApiTodo.App.DTOs.Todo;
 using ApiTodo.App.Repositories.Todos;
@@ -27,5 +28,24 @@ public class TodoController(ITodoRepository todoRepository, IAccessTokenValidato
         var todo = await todoRepository.Create(request);
 
         return Ok(todo);
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        try
+        {
+            var result = await todoRepository.DeleteAsync(id);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            var result = new
+            {
+                statusCode = HttpStatusCode.NotFound,
+                message = ex.Message
+            };
+            return NotFound(result);
+        }
     }
 }

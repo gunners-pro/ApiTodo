@@ -8,4 +8,6 @@ public interface ITodoRepository
     Task<List<ResponseGetAllTodoDTO>> GetAllAsync(Guid userId);
 
     Task<Todo> Create(RequestCreateTodoDTO request);
+
+    Task<ResponseDeleteTodoDTO> DeleteAsync(Guid todoId);
 }

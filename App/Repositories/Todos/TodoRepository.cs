@@ -38,4 +38,17 @@ public class TodoRepository(AppDbContext context) : ITodoRepository
 
         return todo.Entity;
     }
+
+    public async Task<ResponseDeleteTodoDTO> DeleteAsync(Guid todoId)
+    {
+        var todo = await _context.Todos.FindAsync(todoId) ?? throw new Exception("Todo doesn't exists");
+        _context.Todos.Remove(todo);
+        await _context.SaveChangesAsync();
+
+        return new ResponseDeleteTodoDTO
+        {
+            Deleted = true,
+            Message = "Todo deleted"
+        };
+    }
 }
