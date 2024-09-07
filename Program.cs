@@ -1,10 +1,9 @@
 using ApiTodo.App.Context;
 using ApiTodo.App.Repositories.User;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using Microsoft.EntityFrameworkCore;
 using ApiTodo.App.Repositories.Todos;
+using ApiTodo.App.Security.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,24 +16,13 @@ var secretKey = builder.Configuration["JWT:SecretKey"]
     {
         opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
         opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    }).AddJwtBearer(opt =>
-    {
-        opt.TokenValidationParameters = new TokenValidationParameters()
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ClockSkew = TimeSpan.Zero,
-            ValidAudience = builder.Configuration["JWT:Audience"],
-            ValidIssuer = builder.Configuration["JWT:Issuer"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
-        };
-    });
+    }).AddJwtBearer();
     builder.Services.AddControllers();
     builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlServer(connectionString));
     builder.Services.AddScoped<IUserRepository, UserRepository>();
     builder.Services.AddScoped<ITodoRepository, TodoRepository>();
+    builder.Services.AddScoped<IAccessTokenGenerator>(opt => new JwtTokenGenerator(builder.Configuration));
+    builder.Services.AddScoped<IAccessTokenValidator>(opt => new JwtTokenValidator(builder.Configuration));
 }
 
 var app = builder.Build();

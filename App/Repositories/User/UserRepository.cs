@@ -1,16 +1,18 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
 using ApiTodo.App.Context;
 using ApiTodo.App.DTOs.User;
+using ApiTodo.App.Security.Tokens;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using BC = BCrypt.Net.BCrypt;
 
 namespace ApiTodo.App.Repositories.User;
 
-public class UserRepository(AppDbContext context, IConfiguration configuration) : IUserRepository
+public class UserRepository(
+    AppDbContext context,
+    IAccessTokenGenerator jwtToken
+    ) : IUserRepository
 {
     private readonly AppDbContext _context = context;
+    private readonly IAccessTokenGenerator _jwtToken = jwtToken;
 
     public async Task<ResponseLoginUserDTO> Login(RequestLoginUserDTO userLogin)
     {
@@ -25,7 +27,7 @@ public class UserRepository(AppDbContext context, IConfiguration configuration) 
         {
             Id = userLoginResult.Id,
             Email = userLoginResult.Email,
-            Token = GenerateJWTToken()
+            Token = _jwtToken.Generate(userLoginResult.Id)
         };
 
         return user;
@@ -49,7 +51,7 @@ public class UserRepository(AppDbContext context, IConfiguration configuration) 
             {
                 Id = newUser.Id,
                 Email = newUser.Email,
-                Token = GenerateJWTToken()
+                Token = _jwtToken.Generate(newUser.Id)
             };
 
             return userResponse;
@@ -60,18 +62,9 @@ public class UserRepository(AppDbContext context, IConfiguration configuration) 
         }
     }
 
-    private string GenerateJWTToken()
+    public async Task<bool> GetUserById(Guid userId)
     {
-        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:SecretKey"]!));
-        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-        var token = new JwtSecurityToken(
-            issuer: configuration["Jwt:Issuer"],
-            audience: configuration["Jwt:Audience"],
-            expires: DateTime.Now.AddMinutes(double.Parse(configuration["Jwt:TokenValidityInMinutes"]!)),
-            signingCredentials: credentials
-            );
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        var user = await _context.Users.AnyAsync(u => u.Id.Equals(userId));
+        return user;
     }
 }

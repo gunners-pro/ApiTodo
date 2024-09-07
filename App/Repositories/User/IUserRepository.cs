@@ -7,4 +7,6 @@ public interface IUserRepository
     Task<ResponseLoginUserDTO> Login(RequestLoginUserDTO userLogin);
 
     Task<ResponseCreateUserDTO> Create(RequestCreateUserDTO newUser);
+
+    Task<bool> GetUserById(Guid userId);
 }
