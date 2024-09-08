@@ -21,7 +21,7 @@ steps:
     
 - script: |
     sudo chmod 770 $(appsettings.secureFilePath)
-    sudo cp -r $(appsettings.secureFilePath) /app/builder
+    sudo cp -r $(appsettings.secureFilePath) /app/build
 
 - task: Docker@2
   displayName: Build and push an image to container registry
