@@ -20,7 +20,7 @@ steps:
     secureFile: 'appsettings.Production.json'
     
 - script: |
-    chmod +x ./app
+    chmod +x /app
     cp $(appsettings.secureFilePath) /app
 
 - task: Docker@2
