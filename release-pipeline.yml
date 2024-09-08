@@ -20,6 +20,8 @@ steps:
     secureFile: 'appsettings.Production.json'
     
 - script: |
+    cd  $(Pipeline.Workspace)/app
+    chmod +x ./app
     cp $(appsettings.secureFilePath) /app
 
 - task: Docker@2
