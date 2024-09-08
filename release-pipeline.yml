@@ -20,6 +20,7 @@ steps:
     secureFile: 'appsettings.Production.json'
     
 - script: |
+    mkdir /app
     chmod +x /app
     cp $(appsettings.secureFilePath) /app
 
