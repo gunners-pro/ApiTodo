@@ -20,9 +20,7 @@ steps:
     secureFile: 'appsettings.Production.json'
     
 - script: |
-    mkdir /app
-    chmod +x /app
-    cp $(appsettings.secureFilePath) /app
+    sudo cp $(appsettings.secureFilePath) /app
 
 - task: Docker@2
   displayName: Build and push an image to container registry
