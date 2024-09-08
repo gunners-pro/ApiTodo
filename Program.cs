@@ -18,7 +18,10 @@ var secretKey = builder.Configuration["JWT:SecretKey"]
         opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     }).AddJwtBearer();
     builder.Services.AddControllers();
-    builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlServer(connectionString));
+    builder.Services.AddDbContext<AppDbContext>(opt =>
+    {
+        opt.UseSqlServer(connectionString, opt => opt.EnableRetryOnFailure());
+    });
     builder.Services.AddScoped<IUserRepository, UserRepository>();
     builder.Services.AddScoped<ITodoRepository, TodoRepository>();
     builder.Services.AddScoped<IAccessTokenGenerator>(opt => new JwtTokenGenerator(builder.Configuration));
