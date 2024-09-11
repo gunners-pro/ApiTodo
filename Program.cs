@@ -32,6 +32,12 @@ var app = builder.Build();
 
 {
     app.MapControllers();
+    app.UseCors(builder =>
+    {
+        builder.AllowAnyOrigin();
+        builder.AllowAnyHeader();
+        builder.AllowAnyMethod();
+    });
 }
 
 app.MapGet("/", () => "Hello World!");

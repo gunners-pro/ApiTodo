@@ -27,12 +27,13 @@ public class TodoRepository(AppDbContext context) : ITodoRepository
         return todos;
     }
 
-    public async Task<Todo> Create(RequestCreateTodoDTO request)
+    public async Task<Todo> CreateAsync(RequestCreateTodoDTO request, Guid userId)
     {
         var todo = await _context.Todos.AddAsync(new Todo
         {
             Id = Guid.NewGuid(),
-            Title = request.Title
+            Title = request.Title,
+            UserId = userId
         });
         await _context.SaveChangesAsync();
 

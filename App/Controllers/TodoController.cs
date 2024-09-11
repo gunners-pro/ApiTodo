@@ -25,7 +25,9 @@ public class TodoController(ITodoRepository todoRepository, IAccessTokenValidato
     [HttpPost]
     public async Task<IActionResult> Create(RequestCreateTodoDTO request)
     {
-        var todo = await todoRepository.Create(request);
+        var token = HttpContext.Request.Headers.Authorization.ToString()["Bearer ".Length..];
+        var userId = accessTokenValidator.ValidateAndGetUserId(token);
+        var todo = await todoRepository.CreateAsync(request, userId);
 
         return Ok(todo);
     }

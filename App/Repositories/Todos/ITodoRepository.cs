@@ -7,7 +7,7 @@ public interface ITodoRepository
 {
     Task<List<ResponseGetAllTodoDTO>> GetAllAsync(Guid userId);
 
-    Task<Todo> Create(RequestCreateTodoDTO request);
+    Task<Todo> CreateAsync(RequestCreateTodoDTO request, Guid userId);
 
     Task<ResponseDeleteTodoDTO> DeleteAsync(Guid todoId);
 }
