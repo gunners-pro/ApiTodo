@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using ApiTodo.App.Context;
 using ApiTodo.App.DTOs.Todo;
 using ApiTodo.App.Entities;
@@ -9,10 +10,21 @@ public class TodoRepository(AppDbContext context) : ITodoRepository
 {
     private readonly AppDbContext _context = context;
 
-    public async Task<List<ResponseGetAllTodoDTO>> GetAllAsync(Guid userId)
+    public async Task<List<ResponseGetAllTodoDTO>> GetAllAsync(IEnumerable<Claim> claims)
     {
-        var getTodos = await _context.Todos.Where(u => u.UserId.Equals(userId)).ToListAsync();
         var todos = new List<ResponseGetAllTodoDTO>();
+        List<Todo> getTodos = [];
+        string role = claims.First(c => c.Type == ClaimTypes.Role).Value;
+        if (role.Equals("Admin"))
+        {
+            getTodos = await _context.Todos.ToListAsync();
+        }
+        else if (role.Equals("User"))
+        {
+            Guid userId = Guid.Parse(claims.First(c => c.Type == ClaimTypes.Sid).Value);
+            getTodos = await _context.Todos.Where(t => t.UserId.Equals(userId)).ToListAsync();
+        }
+
         foreach (var todo in getTodos)
         {
             todos.Add(new ResponseGetAllTodoDTO
@@ -27,8 +39,9 @@ public class TodoRepository(AppDbContext context) : ITodoRepository
         return todos;
     }
 
-    public async Task<Todo> CreateAsync(RequestCreateTodoDTO request, Guid userId)
+    public async Task<Todo> CreateAsync(RequestCreateTodoDTO request, IEnumerable<Claim> claims)
     {
+        Guid userId = Guid.Parse(claims.First(c => c.Type == ClaimTypes.Sid).Value);
         var todo = await _context.Todos.AddAsync(new Todo
         {
             Id = Guid.NewGuid(),

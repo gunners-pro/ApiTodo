@@ -1,6 +1,8 @@
+using System.Security.Claims;
+
 namespace ApiTodo.App.Security.Tokens;
 
 public interface IAccessTokenValidator
 {
-    Guid ValidateAndGetUserId(string token);
+    IEnumerable<Claim> ValidateAndGetClaims(string token);
 }

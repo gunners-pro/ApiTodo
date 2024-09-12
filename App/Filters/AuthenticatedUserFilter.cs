@@ -1,4 +1,5 @@
 using System.Net;
+using System.Security.Claims;
 using ApiTodo.App.Repositories.User;
 using ApiTodo.App.Security.Tokens;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +21,8 @@ public class AuthenticatedUserFilter(
         try
         {
             var token = TokenOnRequest(context);
-            var userId = _accessTokenValidator.ValidateAndGetUserId(token);
+            var claims = _accessTokenValidator.ValidateAndGetClaims(token);
+            Guid userId = Guid.Parse(claims.First(c => c.Type.Equals(ClaimTypes.Sid)).Value);
 
             var exist = await _userRepository.GetUserById(userId);
             if (exist is false)

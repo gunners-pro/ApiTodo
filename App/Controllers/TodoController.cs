@@ -16,8 +16,8 @@ public class TodoController(ITodoRepository todoRepository, IAccessTokenValidato
     public async Task<IActionResult> Get()
     {
         var token = HttpContext.Request.Headers.Authorization.ToString()["Bearer ".Length..];
-        var userId = accessTokenValidator.ValidateAndGetUserId(token);
-        var todos = await todoRepository.GetAllAsync(userId);
+        var claims = accessTokenValidator.ValidateAndGetClaims(token);
+        var todos = await todoRepository.GetAllAsync(claims);
 
         return Ok(todos);
     }
@@ -26,8 +26,8 @@ public class TodoController(ITodoRepository todoRepository, IAccessTokenValidato
     public async Task<IActionResult> Create(RequestCreateTodoDTO request)
     {
         var token = HttpContext.Request.Headers.Authorization.ToString()["Bearer ".Length..];
-        var userId = accessTokenValidator.ValidateAndGetUserId(token);
-        var todo = await todoRepository.CreateAsync(request, userId);
+        var claims = accessTokenValidator.ValidateAndGetClaims(token);
+        var todo = await todoRepository.CreateAsync(request, claims);
 
         return Ok(todo);
     }

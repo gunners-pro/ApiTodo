@@ -29,8 +29,6 @@ public class UserRepository(
             Role = userLoginResult.Role
         };
 
-        Console.WriteLine(userClaims.Role);
-
         var user = new ResponseLoginUserDTO()
         {
             Id = userLoginResult.Id,

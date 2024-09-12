@@ -8,7 +8,7 @@ namespace ApiTodo.App.Security.Tokens;
 
 public class JwtTokenValidator(IConfiguration configuration) : IAccessTokenValidator
 {
-    public Guid ValidateAndGetUserId(string token)
+    public IEnumerable<Claim> ValidateAndGetClaims(string token)
     {
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:SecretKey"]!));
 
@@ -24,8 +24,7 @@ public class JwtTokenValidator(IConfiguration configuration) : IAccessTokenValid
 
         var tokenHandler = new JwtSecurityTokenHandler();
         var principal = tokenHandler.ValidateToken(token, validationParameter, out _);
-        var userId = principal.Claims.First(c => c.Type == ClaimTypes.Sid).Value;
 
-        return Guid.Parse(userId);
+        return principal.Claims;
     }
 }
