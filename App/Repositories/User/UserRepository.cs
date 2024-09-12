@@ -23,11 +23,19 @@ public class UserRepository(
         if (validPassword is false)
             throw new Exception("The password provided doesn't match.");
 
+        var userClaims = new JwtTokenGeneratorDTO
+        {
+            UserId = userLoginResult.Id,
+            Role = userLoginResult.Role
+        };
+
+        Console.WriteLine(userClaims.Role);
+
         var user = new ResponseLoginUserDTO()
         {
             Id = userLoginResult.Id,
             Email = userLoginResult.Email,
-            Token = _jwtToken.Generate(userLoginResult.Id)
+            Token = _jwtToken.Generate(userClaims)
         };
 
         return user;
@@ -47,11 +55,17 @@ public class UserRepository(
             await _context.Users.AddAsync(newUser);
             await _context.SaveChangesAsync();
 
+            var userClaims = new JwtTokenGeneratorDTO
+            {
+                UserId = newUser.Id,
+                Role = newUser.Role
+            };
+
             var userResponse = new ResponseCreateUserDTO
             {
                 Id = newUser.Id,
                 Email = newUser.Email,
-                Token = _jwtToken.Generate(newUser.Id)
+                Token = _jwtToken.Generate(userClaims)
             };
 
             return userResponse;

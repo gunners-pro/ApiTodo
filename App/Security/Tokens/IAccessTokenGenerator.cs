@@ -2,5 +2,5 @@ namespace ApiTodo.App.Security.Tokens;
 
 public interface IAccessTokenGenerator
 {
-    string Generate(Guid userId);
+    string Generate(JwtTokenGeneratorDTO UserClaims);
 }

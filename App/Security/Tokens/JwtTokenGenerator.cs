@@ -8,13 +8,14 @@ namespace ApiTodo.App.Security.Tokens;
 
 public class JwtTokenGenerator(IConfiguration configuration) : IAccessTokenGenerator
 {
-    public string Generate(Guid userId)
+    public string Generate(JwtTokenGeneratorDTO UserClaims)
     {
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:SecretKey"]!));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
         var claims = new List<Claim>()
         {
-            new(ClaimTypes.Sid, userId.ToString())
+            new(ClaimTypes.Sid, UserClaims.UserId.ToString()),
+            new(ClaimTypes.Role, UserClaims.Role)
         };
 
         var token = new JwtSecurityToken(
