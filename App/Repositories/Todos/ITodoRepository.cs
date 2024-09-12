@@ -10,5 +10,5 @@ public interface ITodoRepository
 
     Task<Todo> CreateAsync(RequestCreateTodoDTO request, IEnumerable<Claim> claims);
 
-    Task<ResponseDeleteTodoDTO> DeleteAsync(Guid todoId);
+    Task<ResponseDeleteTodoDTO> DeleteAsync(Guid todoId, IEnumerable<Claim> claims);
 }

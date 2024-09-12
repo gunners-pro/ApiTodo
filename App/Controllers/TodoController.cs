@@ -32,12 +32,14 @@ public class TodoController(ITodoRepository todoRepository, IAccessTokenValidato
         return Ok(todo);
     }
 
-    [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Delete(Guid id)
+    [HttpDelete("{todoId:guid}")]
+    public async Task<IActionResult> Delete(Guid todoId)
     {
         try
         {
-            var result = await todoRepository.DeleteAsync(id);
+            var token = HttpContext.Request.Headers.Authorization.ToString()["Bearer ".Length..];
+            var claims = accessTokenValidator.ValidateAndGetClaims(token);
+            var result = await todoRepository.DeleteAsync(todoId, claims);
             return Ok(result);
         }
         catch (Exception ex)

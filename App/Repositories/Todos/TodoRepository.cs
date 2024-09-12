@@ -53,11 +53,33 @@ public class TodoRepository(AppDbContext context) : ITodoRepository
         return todo.Entity;
     }
 
-    public async Task<ResponseDeleteTodoDTO> DeleteAsync(Guid todoId)
+    public async Task<ResponseDeleteTodoDTO> DeleteAsync(Guid todoId, IEnumerable<Claim> claims)
     {
-        var todo = await _context.Todos.FindAsync(todoId) ?? throw new Exception("Todo doesn't exists");
-        _context.Todos.Remove(todo);
-        await _context.SaveChangesAsync();
+        Todo? getTodo = null;
+
+        string role = claims.First(c => c.Type == ClaimTypes.Role).Value;
+        if (role.Equals("Admin"))
+        {
+            getTodo = await _context.Todos.FindAsync(todoId);
+            if (getTodo is null)
+            {
+                throw new Exception("Todo doesn't exists.");
+            }
+            _context.Todos.Remove(getTodo!);
+            await _context.SaveChangesAsync();
+        }
+        else if (role.Equals("User"))
+        {
+            var userId = Guid.Parse(claims.First(c => c.Type == ClaimTypes.Sid).Value);
+
+            getTodo = await _context.Todos.Where(t => t.UserId.Equals(userId) && t.Id.Equals(todoId)).FirstOrDefaultAsync();
+            if (getTodo is null)
+            {
+                throw new Exception("Todo doesn't exists.");
+            }
+            _context.Todos.Remove(getTodo!);
+            await _context.SaveChangesAsync();
+        }
 
         return new ResponseDeleteTodoDTO
         {
