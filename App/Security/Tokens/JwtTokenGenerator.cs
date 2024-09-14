@@ -15,7 +15,8 @@ public class JwtTokenGenerator(IConfiguration configuration) : IAccessTokenGener
         var claims = new List<Claim>()
         {
             new(ClaimTypes.Sid, UserClaims.UserId.ToString()),
-            new(ClaimTypes.Role, UserClaims.Role)
+            new(ClaimTypes.Role, UserClaims.Role),
+            new(ClaimTypes.Email, UserClaims.Email)
         };
 
         var token = new JwtSecurityToken(

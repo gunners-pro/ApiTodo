@@ -26,13 +26,12 @@ public class UserRepository(
         var userClaims = new JwtTokenGeneratorDTO
         {
             UserId = userLoginResult.Id,
-            Role = userLoginResult.Role
+            Role = userLoginResult.Role,
+            Email = userLoginResult.Email
         };
 
         var user = new ResponseLoginUserDTO()
         {
-            Id = userLoginResult.Id,
-            Email = userLoginResult.Email,
             Token = _jwtToken.Generate(userClaims)
         };
 

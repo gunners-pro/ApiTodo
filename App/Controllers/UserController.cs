@@ -21,8 +21,8 @@ public class UserController(IUserRepository userRepository) : ControllerBase
         {
             var result = new
             {
-                statusCode = HttpStatusCode.NotFound,
-                message = e.Message
+                StatusCode = HttpStatusCode.NotFound,
+                e.Message
             };
             return NotFound(result);
         }
