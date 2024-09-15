@@ -53,6 +53,20 @@ public class TodoRepository(AppDbContext context) : ITodoRepository
         return todo.Entity;
     }
 
+    public async Task<Todo> UpdateTitleAsync(Guid todoId, RequestUpdateTodoTitleDTO request)
+    {
+        var todo = await _context.Todos.Where(t => t.Id.Equals(todoId)).FirstOrDefaultAsync()
+            ?? throw new Exception("Todo doesn't exists.");
+
+        Console.WriteLine(todo);
+
+        todo.Title = request.Title;
+        _context.Todos.Update(todo);
+        await _context.SaveChangesAsync();
+
+        return todo;
+    }
+
     public async Task<ResponseDeleteTodoDTO> DeleteAsync(Guid todoId, IEnumerable<Claim> claims)
     {
         Todo? getTodo = null;

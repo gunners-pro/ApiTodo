@@ -52,4 +52,28 @@ public class TodoController(ITodoRepository todoRepository, IAccessTokenValidato
             return NotFound(result);
         }
     }
+
+    [HttpPut("{todoId:guid}")]
+    public async Task<IActionResult> Update(Guid todoId, [FromBody] RequestUpdateTodoTitleDTO request)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
+            var result = await todoRepository.UpdateTitleAsync(todoId, request);
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            var result = new
+            {
+                statusCode = HttpStatusCode.NotFound,
+                message = ex.Message
+            };
+            return NotFound(result);
+        }
+    }
 }
