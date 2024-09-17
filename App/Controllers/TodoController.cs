@@ -76,4 +76,23 @@ public class TodoController(ITodoRepository todoRepository, IAccessTokenValidato
             return NotFound(result);
         }
     }
+
+    [HttpPatch("{todoId:guid}/complete")]
+    public async Task<IActionResult> UpdateCompleted(Guid todoId)
+    {
+        try
+        {
+            await todoRepository.CompleteTodoAsync(todoId);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            var result = new
+            {
+                statusCode = HttpStatusCode.NotFound,
+                message = ex.Message
+            };
+            return NotFound(result);
+        }
+    }
 }

@@ -58,8 +58,6 @@ public class TodoRepository(AppDbContext context) : ITodoRepository
         var todo = await _context.Todos.Where(t => t.Id.Equals(todoId)).FirstOrDefaultAsync()
             ?? throw new Exception("Todo doesn't exists.");
 
-        Console.WriteLine(todo);
-
         todo.Title = request.Title;
         _context.Todos.Update(todo);
         await _context.SaveChangesAsync();
@@ -100,5 +98,15 @@ public class TodoRepository(AppDbContext context) : ITodoRepository
             Deleted = true,
             Message = "Todo deleted"
         };
+    }
+
+    public async Task CompleteTodoAsync(Guid todoId)
+    {
+        var todo = await _context.Todos.Where(t => t.Id.Equals(todoId)).FirstOrDefaultAsync()
+            ?? throw new Exception("Todo doesn't exists.");
+
+        todo.IsCompleted = !todo.IsCompleted;
+        _context.Todos.Update(todo);
+        await _context.SaveChangesAsync();
     }
 }
