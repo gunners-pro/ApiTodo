@@ -9,6 +9,13 @@ namespace ApiTodo.App.Controllers;
 [Route("[controller]")]
 public class UserController(IUserRepository userRepository) : ControllerBase
 {
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var users = await userRepository.GetAllAsync();
+        return Ok(users);
+    }
+
     [HttpPost("login")]
     public async Task<IActionResult> Login(RequestLoginUserDTO request)
     {

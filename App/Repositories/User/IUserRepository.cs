@@ -9,4 +9,6 @@ public interface IUserRepository
     Task<ResponseCreateUserDTO> Create(RequestCreateUserDTO newUser);
 
     Task<bool> GetUserById(Guid userId);
+
+    Task<ICollection<ResponseGetUsersDTO>> GetAllAsync();
 }

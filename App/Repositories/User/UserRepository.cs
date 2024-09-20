@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using ApiTodo.App.Context;
 using ApiTodo.App.DTOs.User;
 using ApiTodo.App.Security.Tokens;
@@ -77,5 +78,22 @@ public class UserRepository(
     {
         var user = await _context.Users.AnyAsync(u => u.Id.Equals(userId));
         return user;
+    }
+
+    public async Task<ICollection<ResponseGetUsersDTO>> GetAllAsync()
+    {
+        var users = await _context.Users.ToListAsync();
+        var allUsers = new Collection<ResponseGetUsersDTO>();
+        foreach (var user in users)
+        {
+            allUsers.Add(new ResponseGetUsersDTO
+            {
+                Id = user.Id,
+                Email = user.Email,
+                Role = user.Role
+            });
+        }
+
+        return allUsers;
     }
 }
