@@ -10,11 +10,13 @@ namespace ApiTodo.App.Attributes;
 
 public class AuthenticatedUserFilter(
     IAccessTokenValidator accessTokenValidator,
-    IUserRepository userRepository
+    IUserRepository userRepository,
+    string[] Roles
     ) : IAsyncAuthorizationFilter
 {
     private readonly IAccessTokenValidator _accessTokenValidator = accessTokenValidator;
     private readonly IUserRepository _userRepository = userRepository;
+    private readonly string[] _roles = Roles;
 
     public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
     {
@@ -23,6 +25,11 @@ public class AuthenticatedUserFilter(
             var token = TokenOnRequest(context);
             var claims = _accessTokenValidator.ValidateAndGetClaims(token);
             Guid userId = Guid.Parse(claims.First(c => c.Type.Equals(ClaimTypes.Sid)).Value);
+            var role = claims.First(c => c.Type.Equals(ClaimTypes.Role)).Value;
+            if (!_roles.Contains(role))
+            {
+                throw new Exception("Usuário sem permissão");
+            }
 
             var exist = await _userRepository.GetUserById(userId);
             if (exist is false)

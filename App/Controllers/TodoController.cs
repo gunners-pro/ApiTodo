@@ -9,7 +9,7 @@ namespace ApiTodo.App.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-[AuthenticatedUser]
+[AuthenticatedUser(["User", "Admin"])]
 public class TodoController(ITodoRepository todoRepository, IAccessTokenValidator accessTokenValidator) : ControllerBase
 {
     [HttpGet]

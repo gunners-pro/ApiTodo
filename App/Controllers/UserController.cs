@@ -1,4 +1,5 @@
 using System.Net;
+using ApiTodo.App.Attributes;
 using ApiTodo.App.DTOs.User;
 using ApiTodo.App.Repositories.User;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,7 @@ namespace ApiTodo.App.Controllers;
 public class UserController(IUserRepository userRepository) : ControllerBase
 {
     [HttpGet]
+    [AuthenticatedUser(["Admin"])]
     public async Task<IActionResult> GetAll()
     {
         var users = await userRepository.GetAllAsync();
